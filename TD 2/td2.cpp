@@ -50,13 +50,27 @@ string lireString(istream& fichier)
 #pragma endregion//}
 
 //TODO: Une fonction pour ajouter un Film à une ListeFilms, le film existant déjà; on veut uniquement ajouter le pointeur vers le film existant.  Cette fonction doit doubler la taille du tableau alloué, avec au minimum un élément, dans le cas où la capacité est insuffisante pour ajouter l'élément.  Il faut alors allouer un nouveau tableau plus grand, copier ce qu'il y avait dans l'ancien, et éliminer l'ancien trop petit.  Cette fonction ne doit copier aucun Film ni Acteur, elle doit copier uniquement des pointeurs.
-void ajouterFilm() {
-
+void ajouterFilm(Film* film, ListeFilms& listeDeFilms) {
+	if (listeDeFilms.capacite != listeDeFilms.nElements) {
+		listeDeFilms.elements[listeDeFilms.nElements] = film;
+		listeDeFilms.nElements += 1;
+	}
+	else {
+		listeDeFilms.capacite *= 2;
+		Film** nouvelleListe = new Film * [listeDeFilms.capacite];
+		
+		for (int i = 0; i < listeDeFilms.nElements; i++) {
+			nouvelleListe[i] = listeDeFilms.elements[i];
+		}
+		nouvelleListe[listeDeFilms.nElements] = film;
+		listeDeFilms.elements = nouvelleListe;
+		listeDeFilms.nElements += 1;
+	}
 }
 //TODO: Une fonction pour enlever un Film d'une ListeFilms (enlever le pointeur) sans effacer le film; la fonction prenant en paramètre un pointeur vers le film à enlever.  L'ordre des films dans la liste n'a pas à être conservé.
 
 //TODO: Une fonction pour trouver un Acteur par son nom dans une ListeFilms, qui retourne un pointeur vers l'acteur, ou nullptr si l'acteur n'est pas trouvé.  Devrait utiliser span.
-
+//Film* film : span(listeDeFilms.elements, listeDeFilms.nElements)
 //TODO: Compléter les fonctions pour lire le fichier et créer/allouer une ListeFilms.  La ListeFilms devra être passée entre les fonctions, pour vérifier l'existence d'un Acteur avant de l'allouer à nouveau (cherché par nom en utilisant la fonction ci-dessus).
 Acteur* lireActeur(istream& fichier)
 {
@@ -64,7 +78,8 @@ Acteur* lireActeur(istream& fichier)
 	acteur.nom = lireString(fichier);
 	acteur.anneeNaissance = lireUint16(fichier);
 	acteur.sexe = lireUint8(fichier);
-	return {&acteur}; //TODO: Retourner un pointeur soit vers un acteur existant ou un nouvel acteur ayant les bonnes informations, selon si l'acteur existait déjà.  Pour fins de débogage, affichez les noms des acteurs crées; vous ne devriez pas voir le même nom d'acteur affiché deux fois pour la création.
+	Acteur* acteurPtr = new Acteur(acteur);
+	return acteurPtr; //TODO: Retourner un pointeur soit vers un acteur existant ou un nouvel acteur ayant les bonnes informations, selon si l'acteur existait déjà.  Pour fins de débogage, affichez les noms des acteurs crées; vous ne devriez pas voir le même nom d'acteur affiché deux fois pour la création.
 }
 
 Film* lireFilm(istream& fichier)
@@ -85,7 +100,8 @@ Film* lireFilm(istream& fichier)
 		film.acteurs.elements[i] = lireActeur(fichier); //TODO: Placer l'acteur au bon endroit dans les acteurs du film.
 		//TODO: Ajouter le film à la liste des films dans lesquels l'acteur joue.
 	}
-	return {&film}; //TODO: Retourner le pointeur vers le nouveau film.
+	Film* filmPtr = new Film(film);
+	return filmPtr; //TODO: Retourner le pointeur vers le nouveau film.
 }
 
 ListeFilms creerListe(string nomFichier)
@@ -94,16 +110,18 @@ ListeFilms creerListe(string nomFichier)
 	fichier.exceptions(ios::failbit);
 
 	int nElements = lireUint16(fichier);
-
+	
 	//TODO: Créer une liste de films vide.
 	ListeFilms listeDeFilm = {};
 	listeDeFilm.capacite = 1;
 	listeDeFilm.nElements = 0;
+	listeDeFilm.elements = new Film* [listeDeFilm.capacite];
+
 	for (int i = 0; i < nElements; i++) {
-		lireFilm(fichier); //TODO: Ajouter le film à la liste.
+		ajouterFilm(lireFilm(fichier), listeDeFilm); //TODO: Ajouter le film à la liste.
 	}
 
-	return {}; //TODO: Retourner la liste de films.
+	return {listeDeFilm}; //TODO: Retourner la liste de films.
 }
 
 //TODO: Une fonction pour détruire un film (relâcher toute la mémoire associée à ce film, et les acteurs qui ne jouent plus dans aucun films de la collection).  Noter qu'il faut enleve le film détruit des films dans lesquels jouent les acteurs.  Pour fins de débogage, affichez les noms des acteurs lors de leur destruction.
