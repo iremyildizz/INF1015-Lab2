@@ -77,7 +77,7 @@ void ajouterFilm(ListeFilms& listeFilm, Film* ptrFilm)
 	listeFilm.elements[listeFilm.nElements] = ptrFilm;
 	listeFilm.nElements += 1;
 }
-
+//testtest123
 
 //TODO: Une fonction pour enlever un Film d'une ListeFilms (enlever le pointeur) sans effacer le film; la fonction prenant en paramètre un pointeur vers le film à enlever.  L'ordre des films dans la liste n'a pas à être conservé.
 void enleverFilm(ListeFilms& listeFilm, Film* ptrFilm)
