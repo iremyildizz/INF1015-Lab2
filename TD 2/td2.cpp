@@ -96,13 +96,13 @@ Film* lireFilm(istream& fichier)
 	film.acteurs.elements = new Acteur* [nElements];
 
 //TODO: done Placer l'acteur au bon endroit dans les acteurs du film.
-//TODO: done ? Ajouter le film à la liste des films dans lesquels l'acteur joue.
+//TODO: done Ajouter le film à la liste des films dans lesquels l'acteur joue.
+	Film* filmPtr = new Film(film);
 	for (int i = 0; i < nElements; i++) {
 		Acteur* newActeur = lireActeur(fichier);
-		film.acteurs.elements[i] = newActeur;
-		ajouterFilm(lireFilm(fichier), newActeur->joueDans);
+		filmPtr->acteurs.elements[i] = newActeur;
+		ajouterFilm(filmPtr, newActeur->joueDans);
 	}
-	Film* filmPtr = new Film(film);
 	return filmPtr; //TODO: done Retourner le pointeur vers le nouveau film.
 }
 
@@ -131,7 +131,7 @@ void détruireFilm(){
 
 }
 //TODO: Une fonction pour détruire une ListeFilms et tous les films qu'elle contient.
-void detruireListeFilm() {
+void detruireListeFilm(){
 
 }
 
@@ -141,7 +141,12 @@ void afficherActeur(const Acteur& acteur)
 }
 
 //TODO: Une fonction pour afficher un film avec tous ces acteurs (en utilisant la fonction afficherActeur ci-dessus).
+void afficherFilm(const Film* film){
+	cout << " " << film->titre << endl;
+}
+void afficherFilmAvecActeur() {
 
+}
 void afficherListeFilms(const ListeFilms& listeFilms)
 {
 	//TODO: Utiliser des caractères Unicode pour définir la ligne de séparation (différente des autres lignes de séparations dans ce progamme).
@@ -179,7 +184,7 @@ int main()
 
 	cout << ligneDeSeparation << "Le premier film de la liste est:" << endl;
 	//TODO: Afficher le premier film de la liste.  Devrait être Alien.
-
+	afficherFilm(listeFilms.elements[0]);
 	cout << ligneDeSeparation << "Les films sont:" << endl;
 	//TODO: Afficher la liste des films.  Il devrait y en avoir 7.
 
