@@ -95,13 +95,15 @@ Film* lireFilm(istream& fichier)
 	film.acteurs.capacite = nElements;
 	film.acteurs.elements = new Acteur* [nElements];
 
-
+//TODO: done Placer l'acteur au bon endroit dans les acteurs du film.
+//TODO: done ? Ajouter le film à la liste des films dans lesquels l'acteur joue.
 	for (int i = 0; i < nElements; i++) {
-		film.acteurs.elements[i] = lireActeur(fichier); //TODO: Placer l'acteur au bon endroit dans les acteurs du film.
-		//TODO: Ajouter le film à la liste des films dans lesquels l'acteur joue.
+		Acteur* newActeur = lireActeur(fichier);
+		film.acteurs.elements[i] = newActeur;
+		ajouterFilm(lireFilm(fichier), newActeur->joueDans);
 	}
 	Film* filmPtr = new Film(film);
-	return filmPtr; //TODO: Retourner le pointeur vers le nouveau film.
+	return filmPtr; //TODO: done Retourner le pointeur vers le nouveau film.
 }
 
 ListeFilms creerListe(string nomFichier)
@@ -111,22 +113,27 @@ ListeFilms creerListe(string nomFichier)
 
 	int nElements = lireUint16(fichier);
 	
-	//TODO: Créer une liste de films vide.
+	//TODO: done Créer une liste de films vide.
 	ListeFilms listeDeFilm = {};
 	listeDeFilm.capacite = 1;
 	listeDeFilm.nElements = 0;
 	listeDeFilm.elements = new Film* [listeDeFilm.capacite];
 
 	for (int i = 0; i < nElements; i++) {
-		ajouterFilm(lireFilm(fichier), listeDeFilm); //TODO: Ajouter le film à la liste.
+		ajouterFilm(lireFilm(fichier), listeDeFilm); //TODO: done Ajouter le film à la liste.
 	}
 
-	return {listeDeFilm}; //TODO: Retourner la liste de films.
+	return {listeDeFilm}; //TODO: done  Retourner la liste de films.
 }
 
 //TODO: Une fonction pour détruire un film (relâcher toute la mémoire associée à ce film, et les acteurs qui ne jouent plus dans aucun films de la collection).  Noter qu'il faut enleve le film détruit des films dans lesquels jouent les acteurs.  Pour fins de débogage, affichez les noms des acteurs lors de leur destruction.
+void détruireFilm(){
 
+}
 //TODO: Une fonction pour détruire une ListeFilms et tous les films qu'elle contient.
+void detruireListeFilm() {
+
+}
 
 void afficherActeur(const Acteur& acteur)
 {
