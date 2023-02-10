@@ -57,7 +57,7 @@ void ajouterFilm(Film* film, ListeFilms& listeDeFilms) {
 	}
 	else {
 		listeDeFilms.capacite *= 2;
-		Film** nouvelleListe = new Film * [listeDeFilms.capacite];
+		Film** nouvelleListe = new Film* [listeDeFilms.capacite];
 		
 		for (int i = 0; i < listeDeFilms.nElements; i++) {
 			nouvelleListe[i] = listeDeFilms.elements[i];
@@ -88,9 +88,12 @@ Acteur* lireActeur(istream& fichier, const ListeFilms& listeFilms)
 	acteur.sexe = lireUint8(fichier);
 
 	Acteur* acteurPtr = trouverActeur(listeFilms, acteur.nom);
-	if (acteurPtr == nullptr)
+	if (acteurPtr == nullptr) {
 		acteurPtr = new Acteur(acteur);
-
+		acteurPtr->joueDans.capacite = 1;
+		acteurPtr->joueDans.nElements = 0;
+		acteurPtr->joueDans.elements = new Film* [acteurPtr->joueDans.capacite];
+	}
 	return acteurPtr; //TODO: done Retourner un pointeur soit vers un acteur existant ou un nouvel acteur ayant les bonnes informations, selon si l'acteur existait déjà.  Pour fins de débogage, affichez les noms des acteurs crées; vous ne devriez pas voir le même nom d'acteur affiché deux fois pour la création.
 }
 
