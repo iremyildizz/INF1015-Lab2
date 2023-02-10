@@ -49,7 +49,7 @@ string lireString(istream& fichier)
 
 #pragma endregion//}
 
-//TODO: Une fonction pour ajouter un Film à une ListeFilms, le film existant déjà; on veut uniquement ajouter le pointeur vers le film existant.  Cette fonction doit doubler la taille du tableau alloué, avec au minimum un élément, dans le cas où la capacité est insuffisante pour ajouter l'élément.  Il faut alors allouer un nouveau tableau plus grand, copier ce qu'il y avait dans l'ancien, et éliminer l'ancien trop petit.  Cette fonction ne doit copier aucun Film ni Acteur, elle doit copier uniquement des pointeurs.
+//TODO: Une done fonction pour ajouter un Film à une ListeFilms, le film existant déjà; on veut uniquement ajouter le pointeur vers le film existant.  Cette fonction doit doubler la taille du tableau alloué, avec au minimum un élément, dans le cas où la capacité est insuffisante pour ajouter l'élément.  Il faut alors allouer un nouveau tableau plus grand, copier ce qu'il y avait dans l'ancien, et éliminer l'ancien trop petit.  Cette fonction ne doit copier aucun Film ni Acteur, elle doit copier uniquement des pointeurs.
 void ajouterFilm(Film* film, ListeFilms& listeDeFilms) {
 	if (listeDeFilms.capacite != listeDeFilms.nElements) {
 		listeDeFilms.elements[listeDeFilms.nElements] = film;
@@ -70,19 +70,31 @@ void ajouterFilm(Film* film, ListeFilms& listeDeFilms) {
 //TODO: Une fonction pour enlever un Film d'une ListeFilms (enlever le pointeur) sans effacer le film; la fonction prenant en paramètre un pointeur vers le film à enlever.  L'ordre des films dans la liste n'a pas à être conservé.
 
 //TODO: Une fonction pour trouver un Acteur par son nom dans une ListeFilms, qui retourne un pointeur vers l'acteur, ou nullptr si l'acteur n'est pas trouvé.  Devrait utiliser span.
-//Film* film : span(listeDeFilms.elements, listeDeFilms.nElements)
-//TODO: Compléter les fonctions pour lire le fichier et créer/allouer une ListeFilms.  La ListeFilms devra être passée entre les fonctions, pour vérifier l'existence d'un Acteur avant de l'allouer à nouveau (cherché par nom en utilisant la fonction ci-dessus).
-Acteur* lireActeur(istream& fichier)
+Acteur* trouverActeur(const ListeFilms& listeFilms, const string& nomActeur){
+	for (Film* film : span(listeFilms.elements, listeFilms.nElements)) {
+		for (Acteur* acteur : span(film->acteurs.elements, film->acteurs.nElements)) {
+			if (nomActeur == acteur->nom)
+				return acteur;
+		}
+	}
+	return nullptr;
+}
+//TODO: done Compléter les fonctions pour lire le fichier et créer/allouer une ListeFilms.  La ListeFilms devra être passée entre les fonctions, pour vérifier l'existence d'un Acteur avant de l'allouer à nouveau (cherché par nom en utilisant la fonction ci-dessus).
+Acteur* lireActeur(istream& fichier, const ListeFilms& listeFilms)
 {
 	Acteur acteur = {};
 	acteur.nom = lireString(fichier);
 	acteur.anneeNaissance = lireUint16(fichier);
 	acteur.sexe = lireUint8(fichier);
-	Acteur* acteurPtr = new Acteur(acteur);
-	return acteurPtr; //TODO: Retourner un pointeur soit vers un acteur existant ou un nouvel acteur ayant les bonnes informations, selon si l'acteur existait déjà.  Pour fins de débogage, affichez les noms des acteurs crées; vous ne devriez pas voir le même nom d'acteur affiché deux fois pour la création.
+
+	Acteur* acteurPtr = trouverActeur(listeFilms, acteur.nom);
+	if (acteurPtr == nullptr)
+		acteurPtr = new Acteur(acteur);
+
+	return acteurPtr; //TODO: done Retourner un pointeur soit vers un acteur existant ou un nouvel acteur ayant les bonnes informations, selon si l'acteur existait déjà.  Pour fins de débogage, affichez les noms des acteurs crées; vous ne devriez pas voir le même nom d'acteur affiché deux fois pour la création.
 }
 
-Film* lireFilm(istream& fichier)
+Film* lireFilm(istream& fichier, const ListeFilms& listeFilms)
 {
 	Film film = {};
 	film.titre = lireString(fichier);
@@ -99,7 +111,7 @@ Film* lireFilm(istream& fichier)
 //TODO: done Ajouter le film à la liste des films dans lesquels l'acteur joue.
 	Film* filmPtr = new Film(film);
 	for (int i = 0; i < nElements; i++) {
-		Acteur* newActeur = lireActeur(fichier);
+		Acteur* newActeur = lireActeur(fichier, listeFilms);
 		filmPtr->acteurs.elements[i] = newActeur;
 		ajouterFilm(filmPtr, newActeur->joueDans);
 	}
@@ -120,7 +132,7 @@ ListeFilms creerListe(string nomFichier)
 	listeDeFilm.elements = new Film* [listeDeFilm.capacite];
 
 	for (int i = 0; i < nElements; i++) {
-		ajouterFilm(lireFilm(fichier), listeDeFilm); //TODO: done Ajouter le film à la liste.
+		ajouterFilm(lireFilm(fichier, listeDeFilm), listeDeFilm); //TODO: done Ajouter le film à la liste.
 	}
 
 	return {listeDeFilm}; //TODO: done  Retourner la liste de films.
@@ -140,7 +152,7 @@ void afficherActeur(const Acteur& acteur)
 	cout << "  " << acteur.nom << ", " << acteur.anneeNaissance << " " << acteur.sexe << endl;
 }
 
-//TODO: Une fonction pour afficher un film avec tous ces acteurs (en utilisant la fonction afficherActeur ci-dessus).
+//TODO: done Une fonction pour afficher un film avec tous ces acteurs (en utilisant la fonction afficherActeur ci-dessus).
 void afficherFilm(const Film* film){
 	cout << film->titre << endl;
 }
@@ -149,15 +161,15 @@ void afficherFilmAvecActeur(const Film* film){
 	for (int i = 0; i < film->acteurs.nElements; i++) {
 		afficherActeur(*film->acteurs.elements[i]);
 	}
-}//Film* film : span(listeDeFilms.elements, listeDeFilms.nElements)
+}
 void afficherListeFilms(const ListeFilms& listeFilms)
 {
-	//TODO: Utiliser des caractères Unicode pour définir la ligne de séparation (différente des autres lignes de séparations dans ce progamme).
+	//TODO: done Utiliser des caractères Unicode pour définir la ligne de séparation (différente des autres lignes de séparations dans ce progamme).
 	static const string ligneDeSeparation = {"--------------------------------------"};
 	cout << ligneDeSeparation << endl;
-	//TODO: Changer le for pour utiliser un span.
+	//TODO: done Changer le for pour utiliser un span.
 	for (Film* film : span(listeFilms.elements, listeFilms.nElements)) {
-		//TODO: Afficher le film.
+		//TODO: done Afficher le film.
 		afficherFilmAvecActeur(film);
 		cout << ligneDeSeparation << endl;
 	}
@@ -165,8 +177,8 @@ void afficherListeFilms(const ListeFilms& listeFilms)
 
 void afficherFilmographieActeur(const ListeFilms& listeFilms, const string& nomActeur)
 {
-	//TODO: Utiliser votre fonction pour trouver l'acteur (au lieu de le mettre à nullptr).
-	const Acteur* acteur = nullptr;
+	//TODO: done Utiliser votre fonction pour trouver l'acteur (au lieu de le mettre à nullptr).
+	const Acteur* acteur = trouverActeur(listeFilms, nomActeur);
 	if (acteur == nullptr)
 		cout << "Aucun acteur de ce nom" << endl;
 	else
@@ -192,6 +204,7 @@ int main()
 	cout << ligneDeSeparation << "Les films sont:" << endl;
 	//TODO: Afficher la liste des films.  Il devrait y en avoir 7.
 	afficherListeFilms(listeFilms);
+
 	//TODO: Modifier l'année de naissance de Benedict Cumberbatch pour être 1976 (elle était 0 dans les données lues du fichier).  Vous ne pouvez pas supposer l'ordre des films et des acteurs dans les listes, il faut y aller par son nom.
 
 	cout << ligneDeSeparation << "Liste des films où Benedict Cumberbatch joue sont:" << endl;
