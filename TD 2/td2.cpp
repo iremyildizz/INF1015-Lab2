@@ -142,20 +142,24 @@ void afficherActeur(const Acteur& acteur)
 
 //TODO: Une fonction pour afficher un film avec tous ces acteurs (en utilisant la fonction afficherActeur ci-dessus).
 void afficherFilm(const Film* film){
-	cout << " " << film->titre << endl;
+	cout << film->titre << endl;
 }
-void afficherFilmAvecActeur() {
-
-}
+void afficherFilmAvecActeur(const Film* film){
+	afficherFilm(film);
+	for (int i = 0; i < film->acteurs.nElements; i++) {
+		afficherActeur(*film->acteurs.elements[i]);
+	}
+}//Film* film : span(listeDeFilms.elements, listeDeFilms.nElements)
 void afficherListeFilms(const ListeFilms& listeFilms)
 {
 	//TODO: Utiliser des caractères Unicode pour définir la ligne de séparation (différente des autres lignes de séparations dans ce progamme).
-	static const string ligneDeSeparation = {};
-	cout << ligneDeSeparation;
+	static const string ligneDeSeparation = {"--------------------------------------"};
+	cout << ligneDeSeparation << endl;
 	//TODO: Changer le for pour utiliser un span.
-	for (int i = 0; i < listeFilms.nElements; i++) {
+	for (Film* film : span(listeFilms.elements, listeFilms.nElements)) {
 		//TODO: Afficher le film.
-		cout << ligneDeSeparation;
+		afficherFilmAvecActeur(film);
+		cout << ligneDeSeparation << endl;
 	}
 }
 
@@ -187,7 +191,7 @@ int main()
 	afficherFilm(listeFilms.elements[0]);
 	cout << ligneDeSeparation << "Les films sont:" << endl;
 	//TODO: Afficher la liste des films.  Il devrait y en avoir 7.
-
+	afficherListeFilms(listeFilms);
 	//TODO: Modifier l'année de naissance de Benedict Cumberbatch pour être 1976 (elle était 0 dans les données lues du fichier).  Vous ne pouvez pas supposer l'ordre des films et des acteurs dans les listes, il faut y aller par son nom.
 
 	cout << ligneDeSeparation << "Liste des films où Benedict Cumberbatch joue sont:" << endl;
