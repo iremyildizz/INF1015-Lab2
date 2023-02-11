@@ -68,9 +68,17 @@ void ajouterFilm(Film* film, ListeFilms& listeDeFilms) {
 	}
 }
 //TODO: Une fonction pour enlever un Film d'une ListeFilms (enlever le pointeur) sans effacer le film; la fonction prenant en paramètre un pointeur vers le film à enlever.  L'ordre des films dans la liste n'a pas à être conservé.
-
-//TODO: Une fonction pour trouver un Acteur par son nom dans une ListeFilms, qui retourne un pointeur vers l'acteur, ou nullptr si l'acteur n'est pas trouvé.  Devrait utiliser span.
-Acteur* trouverActeur(const ListeFilms& listeFilms, const string& nomActeur){
+void enleverFilm(ListeFilms& listeFilms, Film* film) {
+	for (int i = 0; i < listeFilms.nElements; i++) {
+		if (listeFilms.elements[i] == film) { //titre
+			listeFilms.nElements -= 1;
+			listeFilms.elements[i] = listeFilms.elements[listeFilms.nElements];
+			listeFilms.elements[listeFilms.nElements] = nullptr;
+		}
+	}
+}
+//TODO: done Une fonction pour trouver un Acteur par son nom dans une ListeFilms, qui retourne un pointeur vers l'acteur, ou nullptr si l'acteur n'est pas trouvé.  Devrait utiliser span.
+Acteur* trouverActeur(const ListeFilms& listeFilms, const string& nomActeur) {
 	for (Film* film : span(listeFilms.elements, listeFilms.nElements)) {
 		for (Acteur* acteur : span(film->acteurs.elements, film->acteurs.nElements)) {
 			if (nomActeur == acteur->nom)
